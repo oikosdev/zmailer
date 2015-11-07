@@ -1,95 +1,128 @@
 /*  =========================================================================
-    zmailer_server - 
-        zmailer server
-        
-        
+    zmailer_server - zmailer_server
 
-    Copyright (c) the Contributors as noted in the AUTHORS file.       
-    This file is part of CZMQ, the high-level C binding for 0MQ:       
-    http://czmq.zeromq.org.                                            
-                                                                       
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.           
     =========================================================================
 */
 
 /*
 @header
-    zmailer_server - 
-        zmailer server
-        
-        
+    Description of class for man page.
 @discuss
+    Detailed discussion of the class, if any.
 @end
 */
 
-#include "../include/zmailer.h"
+#include "zmailer_server.h"
+//  TODO: Change these to match your project's needs
+#include "../include/hello_msg.h"
+#include "../include/zmailer_server.h"
 
-//  Structure of our class
+//  ---------------------------------------------------------------------------
+//  Forward declarations for the two main classes we use here
 
-struct _zmailer_server_t {
-    int filler;     //  TODO: Declare properties
+typedef struct _server_t server_t;
+typedef struct _client_t client_t;
+
+//  This structure defines the context for each running server. Store
+//  whatever properties and structures you need for the server.
+
+struct _server_t {
+    //  These properties must always be present in the server_t
+    //  and are set by the generated engine; do not modify them!
+    zsock_t *pipe;              //  Actor pipe back to caller
+    zconfig_t *config;          //  Current loaded configuration
+
+    //  TODO: Add any properties you need here
 };
 
+//  ---------------------------------------------------------------------------
+//  This structure defines the state for each client connection. It will
+//  be passed to each action in the 'self' argument.
 
-//  --------------------------------------------------------------------------
-//  Create a new zmailer_server.
+struct _client_t {
+    //  These properties must always be present in the client_t
+    //  and are set by the generated engine; do not modify them!
+    server_t *server;           //  Reference to parent server
+    hello_msg_t *message;       //  Message in and out
 
-zmailer_server_t *
-zmailer_server_new ()
+    //  TODO: Add specific properties for your application
+};
+
+//  Include the generated server engine
+#include "zmailer_server_engine.inc"
+
+//  Allocate properties and structures for a new server instance.
+//  Return 0 if OK, or -1 if there was an error.
+
+static int
+server_initialize (server_t *self)
 {
-    zmailer_server_t *self = (zmailer_server_t *) zmalloc (sizeof (zmailer_server_t));
-    assert (self);
-
-    //  TODO: Initialize properties
-
-    return self;
+    //  Construct properties here
+    return 0;
 }
 
-//  --------------------------------------------------------------------------
-//  Destroy the zmailer_server.
+//  Free properties and structures for a server instance
 
-void
-zmailer_server_destroy (zmailer_server_t **self_p)
+static void
+server_terminate (server_t *self)
 {
-    assert (self_p);
-    if (*self_p) {
-        zmailer_server_t *self = *self_p;
+    //  Destroy properties here
+}
 
-        //  TODO: Free class properties
+//  Process server API method, return reply message if any
 
-        //  Free object itself
-        free (self);
-        *self_p = NULL;
-    }
+static zmsg_t *
+server_method (server_t *self, const char *method, zmsg_t *msg)
+{
+    return NULL;
 }
 
 
-//  --------------------------------------------------------------------------
-//  Print properties of the zmailer_server object.
+//  Allocate properties and structures for a new client connection and
+//  optionally engine_set_next_event (). Return 0 if OK, or -1 on error.
 
-void
-zmailer_server_print (zmailer_server_t *self)
+static int
+client_initialize (client_t *self)
 {
-    assert (self);
+    //  Construct properties here
+    return 0;
 }
 
+//  Free properties and structures for a client connection
 
-//  --------------------------------------------------------------------------
-//  Self test of this class.
+static void
+client_terminate (client_t *self)
+{
+    //  Destroy properties here
+}
+
+//  ---------------------------------------------------------------------------
+//  Selftest
 
 void
 zmailer_server_test (bool verbose)
 {
     printf (" * zmailer_server: ");
+    if (verbose)
+        printf ("\n");
 
     //  @selftest
-    //  Simple create/destroy test
-    zmailer_server_t *self = zmailer_server_new ();
-    assert (self);
-    zmailer_server_destroy (&self);
-    //  @end
+    zactor_t *server = zactor_new (zmailer_server, "server");
+    if (verbose)
+        zstr_send (server, "VERBOSE");
+    zstr_sendx (server, "BIND", "ipc://@/zmailer_server", NULL);
 
+    zsock_t *client = zsock_new (ZMQ_DEALER);
+    assert (client);
+    zsock_set_rcvtimeo (client, 2000);
+    zsock_connect (client, "ipc://@/zmailer_server");
+
+    //  TODO: fill this out
+    hello_msg_t *request = hello_msg_new ();
+    hello_msg_destroy (&request);
+
+    zsock_destroy (&client);
+    zactor_destroy (&server);
+    //  @end
     printf ("OK\n");
 }

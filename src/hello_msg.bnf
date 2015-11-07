@@ -1,0 +1,16 @@
+The following ABNF grammar defines the hello msg protocol:
+
+    hello_msg       = *( HELLO | WORLD )
+
+    ;  No description                                                        
+
+    HELLO           = signature %d1
+    signature       = %xAA %xA0             ; two octets
+
+    ;  No description                                                        
+
+    WORLD           = signature %d2
+
+    ; Strings are always length + text contents
+
+    ; Numbers are unsigned integers in network byte order
