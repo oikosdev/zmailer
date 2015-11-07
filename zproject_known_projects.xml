@@ -5,12 +5,14 @@
     <use project = "zmq"
         repository = "https://github.com/zeromq/libzmq"
         test = "zmq_init"
-        cmake_name = "ZeroMQ" />
+        cmake_name = "ZeroMQ"
+        libname = "libzmq"/>
     
     <use project = "czmq"
         repository = "https://github.com/zeromq/czmq"
         test = "zctx_test"
-        cmake_name = "CZMQ">
+        cmake_name = "CZMQ"
+        libname = "libczmq">
         <use project = "zmq" min_major = "4" min_minor = "2" />
     </use>
     
@@ -58,6 +60,8 @@
 
     <use project="curl"
          repository = ""
-         test = "" />
+         test = "" 
+         libname = "libcurl"
+         includename = "curl/curl"/>
 
 </known_projects>
