@@ -1,0 +1,18 @@
+<class
+    name = "zmailer_server"
+    title = "zmailer server"
+    script = "zproto_server_c"
+    protocol_class = "hello_msg"
+    package_dir = "../include"
+    source_dir = "."
+    project_header = "zmailer.h"
+    >
+
+  ZMailer server, a server to communicate with humans 
+
+  <state name = "start">
+      <event name = "HELLO">
+         <action name = "send" message = "WORLD" />
+      </event>
+  </state>
+</class>
