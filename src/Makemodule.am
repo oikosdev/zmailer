@@ -16,11 +16,13 @@ include_HEADERS = \
     include/zmailer.h \
     include/zmailer_server.h \
     include/zmailer_client.h \
+    include/hello_msg.h \
     include/zmailer_library.h
 
 src_libzmailer_la_SOURCES = \
     src/zmailer_server.c \
     src/zmailer_client.c \
+    src/hello_msg.c \
     src/platform.h
 
 src_libzmailer_la_CPPFLAGS = ${AM_CPPFLAGS}
@@ -54,7 +56,8 @@ src_zmailer_selftest_SOURCES = src/zmailer_selftest.c
 apidir = @datadir@/zproject/zmailer
 dist_api_DATA = \
     api/zmailer_server.xml \
-    api/zmailer_client.xml
+    api/zmailer_client.xml \
+    api/hello_msg.xml
 
 # define custom target for all products of /src
 src: src/libzmailer.la src/zmailer_selftest
