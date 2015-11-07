@@ -1,15 +1,24 @@
-
-    <class name = "zmailer_client" >
-        zmailer server
-        
-        <include filename = "../license.xml" />
-        
-        <!-- Note: If no <destructor> is declared, an implicit one is created.
-            </destructor> -->
-        
-        <!-- Note: See zproject_class_api.gsl for all the type strings that
-            are supported for arguments and return values in C headers.
-            Not all of these are supported in all language bindings;
-            see each language binding's file for supported types in that
-            language, and add more types as needed where appropriate. -->
-    </class>
+<class
+    name = "zmailer_client"
+    title = "ZMailer Client"
+    script = "zproto_client_c"
+    protocol_class = "hello_msg"
+    project_header = "czmq.h"
+    package_dir = "."
+    >
+    <state name = "start">
+        <event name = "constructor" next = "connected">
+            <action name = "connect to server" />
+            <action name = "send" message = "HELLO" />
+        </event>
+    </state>
+    <state name = "connected">
+        <event name = "WORLD" next = "connected" >
+            <action name = "terminate" />
+        </event>
+    </state>
+    <method name = "constructor">
+    Connect to server.
+        <field name = "endpoint" type = "string" />
+    </method>
+</class>

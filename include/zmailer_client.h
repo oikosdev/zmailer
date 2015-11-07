@@ -30,6 +30,10 @@ ZMAILER_EXPORT zmailer_client_t *
 ZMAILER_EXPORT void
     zmailer_client_destroy (zmailer_client_t **self_p);
 
+//  Connect to server.
+ZMAILER_EXPORT void
+    zmailer_client_constructor (zmailer_client_t *self);
+
 //  Print properties of the zmailer_client object.
 ZMAILER_EXPORT void
     zmailer_client_print (zmailer_client_t *self);

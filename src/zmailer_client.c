@@ -1,8 +1,5 @@
 /*  =========================================================================
     zmailer_client - 
-        zmailer server
-        
-        
 
     Copyright (c) the Contributors as noted in the AUTHORS file.       
     This file is part of CZMQ, the high-level C binding for 0MQ:       
@@ -17,9 +14,6 @@
 /*
 @header
     zmailer_client - 
-        zmailer server
-        
-        
 @discuss
 @end
 */
@@ -65,6 +59,15 @@ zmailer_client_destroy (zmailer_client_t **self_p)
     }
 }
 
+
+//  --------------------------------------------------------------------------
+//  Connect to server.
+
+void
+zmailer_client_constructor (zmailer_client_t *self)
+{
+    assert (self);
+}
 
 //  --------------------------------------------------------------------------
 //  Print properties of the zmailer_client object.

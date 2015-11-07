@@ -12,6 +12,7 @@
 
   <state name = "start">
       <event name = "HELLO">
+         <action name = "echo" />
          <action name = "send" message = "WORLD" />
       </event>
   </state>

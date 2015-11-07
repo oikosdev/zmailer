@@ -97,6 +97,8 @@ static void
     s_client_execute (s_client_t *client, event_t event);
 static int
     s_client_handle_wakeup (zloop_t *loop, int timer_id, void *argument);
+static void
+    echo (client_t *self);
 
 //  ---------------------------------------------------------------------------
 //  These methods are an internal API for actions
@@ -370,6 +372,12 @@ s_client_execute (s_client_t *self, event_t event)
         switch (self->state) {
             case start_state:
                 if (self->event == hello_event) {
+                    if (!self->exception) {
+                        //  echo
+                        if (self->server->verbose)
+                            zsys_debug ("%s:         $ echo", self->log_prefix);
+                        echo (&self->client);
+                    }
                     if (!self->exception) {
                         //  send WORLD
                         if (self->server->verbose)
