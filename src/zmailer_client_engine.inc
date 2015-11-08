@@ -52,6 +52,7 @@ s_event_name [] = {
 //  These are the different method arguments we manage automatically
 struct _client_args_t {
     char *endpoint;
+    uint32_t timeout;
 };
 
 typedef struct {
@@ -331,6 +332,7 @@ s_client_execute (s_client_t *self, event_t event)
                         zsys_debug ("%s: Send message to server", self->log_prefix);
                         zmailer_msg_print (self->message);
                         zmailer_msg_send (self->message, self->dealer);
+                        zsys_debug ("message sent ok");
                     }
                     if (!self->exception)
                         self->state = connected_state;
@@ -347,11 +349,13 @@ s_client_execute (s_client_t *self, event_t event)
 
             case connected_state:
                 if (self->event == world_event) {
+                    zsys_debug ("worl event received");
                     if (!self->exception) {
                         //  terminate
                         if (zmailer_client_verbose)
                             zsys_debug ("%s:         $ terminate", self->log_prefix);
                         self->fsm_stopped = true;
+                        zsys_debug ("done here");
                     }
                     if (!self->exception)
                         self->state = connected_state;
@@ -411,7 +415,7 @@ s_client_handle_cmdpipe (zloop_t *loop, zsock_t *reader, void *argument)
     else
     if (streq (method, "CONSTRUCTOR")) {
         zstr_free (&self->args.endpoint);
-        zsock_recv (self->cmdpipe, "s", &self->args.endpoint);
+        zsock_recv (self->cmdpipe, "s4", &self->args.endpoint, &self->args.timeout);
         s_client_execute (self, constructor_event);
     }
     //  Cleanup pipe if any argument frames are still waiting to be eaten
@@ -520,15 +524,18 @@ struct _zmailer_client_t {
     zactor_t *actor;            //  Client actor
     zsock_t *msgpipe;           //  Pipe for async message flow
     bool connected;             //  Client currently connected or not
+    uint32_t status;            //  Returned by actor reply
+    char *reason;               //  Returned by actor reply
 };
 
 
 //  ---------------------------------------------------------------------------
 //  Create a new zmailer_client
-//  Connect to server.                                                              
+//  Connect to server endpoint, with specified timeout in msecs (zero means wait    
+//  forever). Constructor succeeds if connection is successful.                     
 
-static int 
-zmailer_client_constructor (zmailer_client_t *self, const char *endpoint);
+static uint32_t 
+zmailer_client_constructor (zmailer_client_t *self, const char *endpoint, uint32_t timeout);
 
 zmailer_client_t *
 zmailer_client_new (void)
@@ -565,6 +572,7 @@ zmailer_client_destroy (zmailer_client_t **self_p)
         }
         zactor_destroy (&self->actor);
         zsock_destroy (&self->msgpipe);
+        zstr_free (&self->reason);
         free (self);
         *self_p = NULL;
     }
@@ -599,13 +607,100 @@ zmailer_client_msgpipe (zmailer_client_t *self)
 
 
 //  ---------------------------------------------------------------------------
-//  Connect to server.                                                              
+//  Return true if client is currently connected, else false. Note that the
+//  client will automatically re-connect if the server dies and restarts after
+//  a successful first connection.
 
-static int 
-zmailer_client_constructor (zmailer_client_t *self, const char *endpoint)
+bool
+zmailer_client_connected (zmailer_client_t *self)
+{
+    assert (self);
+    int connected;
+    zsock_send (self->actor, "s", "$CONNECTED");
+    zsock_recv (self->actor, "i", &connected);
+    return (bool) connected;
+}
+
+
+//  ---------------------------------------------------------------------------
+//  Get valid reply from actor; discard replies that does not match. Current
+//  implementation filters on first frame of message. Blocks until a valid
+//  reply is received, and properties can be loaded from it. Returns 0 if
+//  matched, -1 if interrupted or timed-out.
+
+static int
+s_accept_reply (zmailer_client_t *self, ...)
+{
+    assert (self);
+    while (!zsys_interrupted) {
+        char *reply = zstr_recv (self->actor);
+        if (!reply)
+            break;              //  Interrupted or timed-out
+
+        va_list args;
+        va_start (args, self);
+        char *filter = va_arg (args, char *);
+        while (filter) {
+            if (streq (reply, filter)) {
+                if (streq (reply, "SUCCESS")) {
+                    zsock_recv (self->actor, "4", &self->status);
+                }
+                else
+                if (streq (reply, "FAILURE")) {
+                    zstr_free (&self->reason);
+                    zsock_recv (self->actor, "4s", &self->status, &self->reason);
+                }
+                break;
+            }
+            filter = va_arg (args, char *);
+        }
+        va_end (args);
+        //  If anything was remaining on pipe, flush it
+        zsock_flush (self->actor);
+        if (filter) {
+            zstr_free (&reply);
+            return 0;           //  We matched one of the filters
+        }
+    }
+    return -1;          //  Interrupted or timed-out
+}
+
+
+//  ---------------------------------------------------------------------------
+//  Connect to server endpoint, with specified timeout in msecs (zero means wait    
+//  forever). Constructor succeeds if connection is successful.                     
+//  Returns >= 0 if successful, -1 if interrupted.
+
+static uint32_t 
+zmailer_client_constructor (zmailer_client_t *self, const char *endpoint, uint32_t timeout)
 {
     assert (self);
 
-    zsock_send (self->actor, "ss", "CONSTRUCTOR", endpoint);
-    return 0;
+    zsock_send (self->actor, "ss4", "CONSTRUCTOR", endpoint, timeout);
+    if (s_accept_reply (self, "SUCCESS", "FAILURE", NULL))
+        return -1;              //  Interrupted or timed-out
+
+    return self->status;
+}
+
+
+//  ---------------------------------------------------------------------------
+//  Return last received status
+
+uint32_t 
+zmailer_client_status (zmailer_client_t *self)
+{
+    assert (self);
+    return self->status;
+}
+
+
+//  ---------------------------------------------------------------------------
+//  Return last received reason
+
+const char *
+zmailer_client_reason (zmailer_client_t *self)
+{
+    assert (self);
+    return self->reason;
 }

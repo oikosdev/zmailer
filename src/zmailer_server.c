@@ -119,6 +119,9 @@ zmailer_server_test (bool verbose)
 
     //  TODO: fill this out
     zmailer_msg_t *request = zmailer_msg_new ();
+    zmailer_msg_set_id (request, ZMAILER_MSG_HELLO);
+    zmailer_msg_send (request, client);
+    sleep (1);
     zmailer_msg_destroy (&request);
 
     zsock_destroy (&client);
@@ -135,5 +138,5 @@ zmailer_server_test (bool verbose)
 static void
 echo (client_t *self)
 {
-
+ zsys_info ("echooooooooooooo");
 }

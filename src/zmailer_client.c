@@ -14,8 +14,8 @@
 
 #include "czmq.h"
 //  TODO: Change these to match your project's needs
-#include "./zmailer_msg.h"
-#include "./zmailer_client.h"
+#include "../include/zmailer_msg.h"
+#include "../include/zmailer_client.h"
 
 //  Forward reference to method arguments structure
 typedef struct _client_args_t client_args_t;
@@ -44,6 +44,8 @@ typedef struct {
 static int
 client_initialize (client_t *self)
 {
+    zsock_connect ( self->dealer, "tcp://127.0.0.1:9999");
+    zsys_info ("connecting dealer"); 
     return 0;
 }
 
@@ -53,6 +55,7 @@ static void
 client_terminate (client_t *self)
 {
     //  Destroy properties here
+    zsys_info ("Quit !");
 }
 
 
@@ -67,14 +70,21 @@ zmailer_client_test (bool verbose)
         printf ("\n");
 
     //  @selftest
+    // working with actors 
     zactor_t *client = zactor_new (zmailer_client, NULL);
-    zmailer_client_verbose = verbose;
+    zmailer_client_verbose = 1; //verbose;
     zactor_destroy (&client);
-
+    //working with the api
     zmailer_client_t *myclient = zmailer_client_new ();
     assert (myclient);
-    zmailer_client_constructor (myclient, "ipc://@/zmailer_server");
-
+    zmailer_client_constructor (myclient, "tcp://127.0.0.1:9999", 20);
+    bool conn = zmailer_client_connected (myclient);
+    assert (!conn);
+    conn = zmailer_client_connected (myclient);
+    assert (conn);
+    zsys_debug ("======================> %i", conn);
     //  @end
     printf ("OK\n");
+    sleep (2);
+    zmailer_client_destroy (&myclient);
 }

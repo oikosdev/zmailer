@@ -57,6 +57,14 @@ zsock_t *
 bool
     zmailer_client_connected (zmailer_client_t *self);
 
+//  Return last received status
+uint32_t 
+    zmailer_client_status (zmailer_client_t *self);
+
+//  Return last received reason
+const char *
+    zmailer_client_reason (zmailer_client_t *self);
+
 //  Self test of this class
 void
     zmailer_client_test (bool verbose);
