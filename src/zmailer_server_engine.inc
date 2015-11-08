@@ -52,7 +52,7 @@ typedef struct {
     zsock_t *router;            //  Socket to talk to clients
     int port;                   //  Server port bound to
     zloop_t *loop;              //  Reactor for server sockets
-    hello_msg_t *message;       //  Message received or sent
+    zmailer_msg_t *message;     //  Message received or sent
     zhash_t *clients;           //  Clients we're connected to
     zconfig_t *config;          //  Configuration tree
     uint client_id;             //  Client identifier counter
@@ -279,15 +279,15 @@ s_satisfy_pedantic_compilers (void)
 //  TODO: replace with lookup table, since ID is one byte
 
 static event_t
-s_protocol_event (hello_msg_t *message)
+s_protocol_event (zmailer_msg_t *message)
 {
     assert (message);
-    switch (hello_msg_id (message)) {
-        case HELLO_MSG_HELLO:
+    switch (zmailer_msg_id (message)) {
+        case ZMAILER_MSG_HELLO:
             return hello_event;
             break;
         default:
-            //  Invalid hello_msg_t
+            //  Invalid zmailer_msg_t
             return terminate_event;
     }
 }
@@ -383,11 +383,11 @@ s_client_execute (s_client_t *self, event_t event)
                         if (self->server->verbose)
                             zsys_debug ("%s:         $ send WORLD",
                                 self->log_prefix);
-                        hello_msg_set_id (self->server->message, HELLO_MSG_WORLD);
+                        zmailer_msg_set_id (self->server->message, ZMAILER_MSG_WORLD);
                         zsys_debug ("%s: Send message to client", self->log_prefix);
-                        hello_msg_print (self->server->message);
-                        hello_msg_set_routing_id (self->server->message, self->routing_id);
-                        hello_msg_send (self->server->message, self->server->router);
+                        zmailer_msg_print (self->server->message);
+                        zmailer_msg_set_routing_id (self->server->message, self->routing_id);
+                        zmailer_msg_send (self->server->message, self->server->router);
                     }
                 }
                 else {
@@ -471,7 +471,7 @@ s_server_new (zsock_t *pipe)
     //  against queue overflow, they should use a credit-based flow
     //  control scheme.
     zsock_set_unbounded (self->router);
-    self->message = hello_msg_new ();
+    self->message = zmailer_msg_new ();
     self->clients = zhash_new ();
     self->config = zconfig_new ("root", NULL);
     self->loop = zloop_new ();
@@ -495,7 +495,7 @@ s_server_destroy (s_server_t **self_p)
     assert (self_p);
     if (*self_p) {
         s_server_t *self = *self_p;
-        hello_msg_destroy (&self->message);
+        zmailer_msg_destroy (&self->message);
         //  Destroy clients before destroying the server
         zhash_destroy (&self->clients);
         server_terminate (&self->server);
@@ -647,20 +647,20 @@ s_server_handle_protocol (zloop_t *loop, zsock_t *reader, void *argument)
     //  We process as many messages as we can, to reduce the overhead
     //  of polling and the reactor:
     while (zsock_events (self->router) & ZMQ_POLLIN) {
-        if (hello_msg_recv (self->message, self->router))
+        if (zmailer_msg_recv (self->message, self->router))
             return -1;              //  Interrupted; exit zloop
 
         //  TODO: use binary hashing on routing_id
-        char *hashkey = zframe_strhex (hello_msg_routing_id (self->message));
+        char *hashkey = zframe_strhex (zmailer_msg_routing_id (self->message));
         s_client_t *client = (s_client_t *) zhash_lookup (self->clients, hashkey);
         if (client == NULL) {
-            client = s_client_new (self, hello_msg_routing_id (self->message));
+            client = s_client_new (self, zmailer_msg_routing_id (self->message));
             zhash_insert (self->clients, hashkey, client);
             zhash_freefn (self->clients, hashkey, s_client_free);
         }
         free (hashkey);
         zsys_debug ("%d: Client message", client->unique_id);
-        hello_msg_print (self->message);
+        zmailer_msg_print (self->message);
         //  Any input from client counts as activity
         if (client->ticket)
             zloop_ticket_reset (self->loop, client->ticket);

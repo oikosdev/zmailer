@@ -14,15 +14,15 @@ pkgconfig_DATA = src/libzmailer.pc
 
 include_HEADERS = \
     include/zmailer.h \
+    include/zmailer_msg.h \
     include/zmailer_server.h \
     include/zmailer_client.h \
-    include/hello_msg.h \
     include/zmailer_library.h
 
 src_libzmailer_la_SOURCES = \
+    src/zmailer_msg.c \
     src/zmailer_server.c \
     src/zmailer_client.c \
-    src/hello_msg.c \
     src/platform.h
 
 src_libzmailer_la_CPPFLAGS = ${AM_CPPFLAGS}
@@ -55,9 +55,9 @@ src_zmailer_selftest_SOURCES = src/zmailer_selftest.c
 # Install api files into /usr/local/share/zproject
 apidir = @datadir@/zproject/zmailer
 dist_api_DATA = \
+    api/zmailer_msg.xml \
     api/zmailer_server.xml \
-    api/zmailer_client.xml \
-    api/hello_msg.xml
+    api/zmailer_client.xml
 
 # define custom target for all products of /src
 src: src/libzmailer.la src/zmailer_selftest

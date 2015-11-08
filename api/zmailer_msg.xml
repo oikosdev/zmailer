@@ -1,0 +1,35 @@
+<class
+    name = "zmailer_msg"
+    signature = "0"
+    title = "zmailer msg protocol"
+    script = "zproto_codec_c"
+    package_dir = "../include"
+    source_dir = "."
+    >
+
+  <message name = "HELLO" />
+  <message name = "WORLD" />
+  <message name = "MAIL">
+    <field name = "version" type = "number" size = "2" value = "1">
+	Version
+    </field>
+    <field name = "from" type = "string">
+        From field
+        <test>cb@oikosdev.net</test>
+    </field>
+    <field name = "to" type = "longstr">
+        To field
+        <test>christophe.beauce@gmail.com</test>
+    </field>
+    <field name = "subject" type = "longstr">
+        Subject of the mail
+        <test> test subject </test>
+    </field>
+    <field name = "request" type = "longstr">
+        Content text of the mail
+        <test> this is the text to be sent </test>
+    </field>
+    Send a message by Mail (using predefined other parameters)
+  </message>
+
+</class>

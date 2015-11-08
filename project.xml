@@ -57,9 +57,9 @@
         generate a skeletons for them.
         use private = "1" for internal classes
     -->
+    <class name = "zmailer_msg">message type</class>
     <class name = "zmailer_server">server sending emails on request</class>
     <class name = "zmailer_client">client requesting emails to be sent</class>
-    <class name = "hello_msg">hello basic message type</class>
     <!--
         Main programs built by the project
                  use private = "1" for internal tools

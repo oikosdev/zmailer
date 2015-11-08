@@ -14,7 +14,7 @@
 
 #include "zmailer.h"
 //  TODO: Change these to match your project's needs
-#include "../include/hello_msg.h"
+#include "../include/zmailer_msg.h"
 #include "../include/zmailer_server.h"
 
 //  ---------------------------------------------------------------------------
@@ -43,7 +43,7 @@ struct _client_t {
     //  These properties must always be present in the client_t
     //  and are set by the generated engine; do not modify them!
     server_t *server;           //  Reference to parent server
-    hello_msg_t *message;       //  Message in and out
+    zmailer_msg_t *message;     //  Message in and out
 
     //  TODO: Add specific properties for your application
 };
@@ -74,7 +74,6 @@ server_terminate (server_t *self)
 static zmsg_t *
 server_method (server_t *self, const char *method, zmsg_t *msg)
 {
-    zsys_debug ("am i here ?: %s", method);
     return NULL;
 }
 
@@ -119,16 +118,9 @@ zmailer_server_test (bool verbose)
     zsock_connect (client, "ipc://@/zmailer_server");
 
     //  TODO: fill this out
-    hello_msg_t *request = hello_msg_new ();
-    hello_msg_set_id (request, HELLO_MSG_HELLO);
-    printf ("-----------------\n");
-    hello_msg_print (request);
-    printf ("-----------------\n");
-    hello_msg_send (request, client);
-    sleep (1);
-    hello_msg_destroy (&request);
-    zstr_send (server, "HELLO");
-    zstr_send (server, "HELLOU");
+    zmailer_msg_t *request = zmailer_msg_new ();
+    zmailer_msg_destroy (&request);
+
     zsock_destroy (&client);
     zactor_destroy (&server);
     //  @end
@@ -143,5 +135,5 @@ zmailer_server_test (bool verbose)
 static void
 echo (client_t *self)
 {
- zsys_debug ("ECHOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+
 }

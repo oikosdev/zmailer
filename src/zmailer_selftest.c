@@ -44,9 +44,9 @@ typedef struct
 #define DECLARE_TEST(TEST) {#TEST, TEST}
 
 test_item_t all_tests [] = {
+    DECLARE_TEST(zmailer_msg_test),
     DECLARE_TEST(zmailer_server_test),
     DECLARE_TEST(zmailer_client_test),
-    DECLARE_TEST(hello_msg_test),
     {0, 0} // Null terminator
 };
 

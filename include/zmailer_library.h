@@ -50,18 +50,18 @@
 #endif
 
 //  Opaque class structures to allow forward references
+typedef struct _zmailer_msg_t zmailer_msg_t;
+#define ZMAILER_MSG_T_DEFINED
 typedef struct _zmailer_server_t zmailer_server_t;
 #define ZMAILER_SERVER_T_DEFINED
 typedef struct _zmailer_client_t zmailer_client_t;
 #define ZMAILER_CLIENT_T_DEFINED
-typedef struct _hello_msg_t hello_msg_t;
-#define HELLO_MSG_T_DEFINED
 
 
 //  Public API classes
+#include "zmailer_msg.h"
 #include "zmailer_server.h"
 #include "zmailer_client.h"
-#include "hello_msg.h"
 
 #endif
 /*

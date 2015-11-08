@@ -2,7 +2,7 @@
     name = "zmailer_server"
     title = "zmailer server"
     script = "zproto_server_c"
-    protocol_class = "hello_msg"
+    protocol_class = "zmailer_msg"
     package_dir = "../include"
     source_dir = "."
     project_header = "zmailer.h"
@@ -12,6 +12,7 @@
 
   <state name = "start">
       <event name = "HELLO">
+         <action name = "echo" />
          <action name = "send" message = "WORLD" />
       </event>
   </state>
