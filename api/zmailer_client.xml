@@ -8,18 +8,10 @@
     >
 
 
-<method name = "constructor" return = "status">
-Connect to server endpoint, with specified timeout in msecs (zero means
-wait forever). Constructor succeeds if connection is successful.
-    <field name = "endpoint" type = "string" />
-    <field name = "timeout" type = "number" />
-    <accept reply = "SUCCESS" />
-    <accept reply = "FAILURE" />
-</method>
-
 
     <state name = "start">
         <event name = "constructor" next = "connected">
+            <action name = "connect to server" />
             <action name = "send" message = "HELLO" />
         </event>
     </state>
@@ -29,14 +21,22 @@ wait forever). Constructor succeeds if connection is successful.
         </event>
     </state>
 
-<reply name = "SUCCESS">
-    <field name = "status" type = "number" />
-</reply>
+    <reply name = "SUCCESS">
+        <field name = "status" type = "number" />
+    </reply>
 
-<reply name = "FAILURE">
-    <field name = "status" type = "number" />
-    <field name = "reason" type = "string" />
-</reply>
+    <reply name = "FAILURE">
+        <field name = "status" type = "number" />
+        <field name = "reason" type = "string" />
+    </reply>
+
+    <method name = "constructor" return = "status">
+    Connect to server endpoint, with specified timeout in msecs (zero means
+    wait forever). Constructor succeeds if connection is successful.
+       <field name = "endpoint" type = "string" />
+       <accept reply = "SUCCESS" />
+       <accept reply = "FAILURE" />
+    </method>
 
 </class>
 
