@@ -52,7 +52,6 @@ s_event_name [] = {
 //  These are the different method arguments we manage automatically
 struct _client_args_t {
     char *endpoint;
-    uint32_t timeout;
 };
 
 typedef struct {
@@ -91,6 +90,8 @@ static int
     s_client_handle_wakeup (zloop_t *loop, int timer_id, void *argument);
 static void
     s_satisfy_pedantic_compilers (void);
+static void
+    connect_to_server (client_t *self);
 
 //  Global tracing/animation indicator; we can't use a client method as
 //  that only works after construction (which we often want to trace).
@@ -324,6 +325,12 @@ s_client_execute (s_client_t *self, event_t event)
             case start_state:
                 if (self->event == constructor_event) {
                     if (!self->exception) {
+                        //  connect to server
+                        if (zmailer_client_verbose)
+                            zsys_debug ("%s:         $ connect to server", self->log_prefix);
+                        connect_to_server (&self->client);
+                    }
+                    if (!self->exception) {
                         //  send HELLO
                         if (zmailer_client_verbose)
                             zsys_debug ("%s:         $ send HELLO",
@@ -332,7 +339,6 @@ s_client_execute (s_client_t *self, event_t event)
                         zsys_debug ("%s: Send message to server", self->log_prefix);
                         zmailer_msg_print (self->message);
                         zmailer_msg_send (self->message, self->dealer);
-                        zsys_debug ("message sent ok");
                     }
                     if (!self->exception)
                         self->state = connected_state;
@@ -349,13 +355,11 @@ s_client_execute (s_client_t *self, event_t event)
 
             case connected_state:
                 if (self->event == world_event) {
-                    zsys_debug ("worl event received");
                     if (!self->exception) {
                         //  terminate
                         if (zmailer_client_verbose)
                             zsys_debug ("%s:         $ terminate", self->log_prefix);
                         self->fsm_stopped = true;
-                        zsys_debug ("done here");
                     }
                     if (!self->exception)
                         self->state = connected_state;
@@ -415,7 +419,7 @@ s_client_handle_cmdpipe (zloop_t *loop, zsock_t *reader, void *argument)
     else
     if (streq (method, "CONSTRUCTOR")) {
         zstr_free (&self->args.endpoint);
-        zsock_recv (self->cmdpipe, "s4", &self->args.endpoint, &self->args.timeout);
+        zsock_recv (self->cmdpipe, "s", &self->args.endpoint);
         s_client_execute (self, constructor_event);
     }
     //  Cleanup pipe if any argument frames are still waiting to be eaten
@@ -535,7 +539,7 @@ struct _zmailer_client_t {
 //  forever). Constructor succeeds if connection is successful.                     
 
 static uint32_t 
-zmailer_client_constructor (zmailer_client_t *self, const char *endpoint, uint32_t timeout);
+zmailer_client_constructor (zmailer_client_t *self, const char *endpoint);
 
 zmailer_client_t *
 zmailer_client_new (void)
@@ -672,14 +676,13 @@ s_accept_reply (zmailer_client_t *self, ...)
 //  Returns >= 0 if successful, -1 if interrupted.
 
 static uint32_t 
-zmailer_client_constructor (zmailer_client_t *self, const char *endpoint, uint32_t timeout)
+zmailer_client_constructor (zmailer_client_t *self, const char *endpoint)
 {
     assert (self);
 
-    zsock_send (self->actor, "ss4", "CONSTRUCTOR", endpoint, timeout);
+    zsock_send (self->actor, "ss", "CONSTRUCTOR", endpoint);
     if (s_accept_reply (self, "SUCCESS", "FAILURE", NULL))
         return -1;              //  Interrupted or timed-out
-
     return self->status;
 }
 

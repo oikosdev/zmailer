@@ -123,7 +123,15 @@ zmailer_server_test (bool verbose)
     zmailer_msg_send (request, client);
     sleep (1);
     zmailer_msg_destroy (&request);
-
+    zmailer_msg_t *request2 = zmailer_msg_new ();
+    zmailer_msg_set_id (request2, ZMAILER_MSG_MAIL);
+    zmailer_msg_set_from (request2, "oikosdev <cb@oikosdev.net>");
+    zmailer_msg_set_to   (request2, "oikosdev <cb@oikosdev.net>");
+    zmailer_msg_set_subject (request2, "Test");
+    zmailer_msg_set_request (request2, "This is a test email for you !");
+    zmailer_msg_send (request2, client);
+    sleep (1);
+    zmailer_msg_destroy (&request2);
     zsock_destroy (&client);
     zactor_destroy (&server);
     //  @end
@@ -138,5 +146,18 @@ zmailer_server_test (bool verbose)
 static void
 echo (client_t *self)
 {
- zsys_info ("echooooooooooooo");
+ zsys_info ("echo !!");
+}
+
+
+//  ---------------------------------------------------------------------------
+//  send_email
+//
+
+static void
+send_email (client_t *self)
+{
+ zsys_info ("sending email !");
+ const char *subject = zmailer_msg_subject (self->message);
+ zsys_info ("received subject: %s", subject);
 }
