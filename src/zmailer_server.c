@@ -58,7 +58,7 @@ static int
 server_initialize (server_t *self)
 {
     //  Construct properties here
-    return 0;
+   return 0;
 }
 
 //  Free properties and structures for a server instance
@@ -85,6 +85,8 @@ static int
 client_initialize (client_t *self)
 {
     //  Construct properties here
+    const char *password = zconfig_get (self->server->config, "/zmailer_server/password", "");
+    zsys_info ("at initialize: %s", password);
     return 0;
 }
 
@@ -110,8 +112,10 @@ zmailer_server_test (bool verbose)
     zactor_t *server = zactor_new (zmailer_server, "server");
     if (verbose)
         zstr_send (server, "VERBOSE");
-    zstr_sendx (server, "BIND", "ipc://@/zmailer_server", NULL);
 
+    zstr_sendx (server, "LOAD", ".config/zmailer.cfg", NULL);
+    //zstr_sendx (server, "BIND", "ipc://@/zmailer_server", NULL);
+    
     zsock_t *client = zsock_new (ZMQ_DEALER);
     assert (client);
     zsock_set_rcvtimeo (client, 2000);
@@ -147,6 +151,8 @@ static void
 echo (client_t *self)
 {
  zsys_info ("echo !!");
+ const char *password = zconfig_get (self->server->config, "/zmailer_server/password", "");
+ zsys_info ("configured password: %s", password);
 }
 
 
