@@ -261,12 +261,6 @@ zmailer_msg_recv (zmailer_msg_t *self, zsock_t *input)
     GET_NUMBER1 (self->id);
 
     switch (self->id) {
-        case ZMAILER_MSG_HELLO:
-            break;
-
-        case ZMAILER_MSG_WORLD:
-            break;
-
         case ZMAILER_MSG_MAIL:
             {
                 uint16_t version;
@@ -372,14 +366,6 @@ zmailer_msg_print (zmailer_msg_t *self)
 {
     assert (self);
     switch (self->id) {
-        case ZMAILER_MSG_HELLO:
-            zsys_debug ("ZMAILER_MSG_HELLO:");
-            break;
-
-        case ZMAILER_MSG_WORLD:
-            zsys_debug ("ZMAILER_MSG_WORLD:");
-            break;
-
         case ZMAILER_MSG_MAIL:
             zsys_debug ("ZMAILER_MSG_MAIL:");
             zsys_debug ("    version=1");
@@ -445,12 +431,6 @@ zmailer_msg_command (zmailer_msg_t *self)
 {
     assert (self);
     switch (self->id) {
-        case ZMAILER_MSG_HELLO:
-            return ("HELLO");
-            break;
-        case ZMAILER_MSG_WORLD:
-            return ("WORLD");
-            break;
         case ZMAILER_MSG_MAIL:
             return ("MAIL");
             break;
@@ -573,26 +553,6 @@ zmailer_msg_test (bool verbose)
     //  Encode/send/decode and verify each message type
     int instance;
     self = zmailer_msg_new ();
-    zmailer_msg_set_id (self, ZMAILER_MSG_HELLO);
-
-    //  Send twice
-    zmailer_msg_send (self, output);
-    zmailer_msg_send (self, output);
-
-    for (instance = 0; instance < 2; instance++) {
-        zmailer_msg_recv (self, input);
-        assert (zmailer_msg_routing_id (self));
-    }
-    zmailer_msg_set_id (self, ZMAILER_MSG_WORLD);
-
-    //  Send twice
-    zmailer_msg_send (self, output);
-    zmailer_msg_send (self, output);
-
-    for (instance = 0; instance < 2; instance++) {
-        zmailer_msg_recv (self, input);
-        assert (zmailer_msg_routing_id (self));
-    }
     zmailer_msg_set_id (self, ZMAILER_MSG_MAIL);
 
     zmailer_msg_set_from (self, "cb@oikosdev.net");

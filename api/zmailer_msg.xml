@@ -7,8 +7,6 @@
     source_dir = "."
     >
 
-  <message name = "HELLO" />
-  <message name = "WORLD" />
   <message name = "MAIL">
     <field name = "version" type = "number" size = "2" value = "1">
 	Version

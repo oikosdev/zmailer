@@ -18,29 +18,25 @@
 //  State machine constants
 
 typedef enum {
-    start_state = 1,
-    connected_state = 2
+    start_state = 1
 } state_t;
 
 typedef enum {
     NULL_event = 0,
-    constructor_event = 1,
-    world_event = 2
+    constructor_event = 1
 } event_t;
 
 //  Names for state machine logging and error reporting
 static char *
 s_state_name [] = {
     "(NONE)",
-    "start",
-    "connected"
+    "start"
 };
 
 static char *
 s_event_name [] = {
     "(NONE)",
-    "constructor",
-    "WORLD"
+    "constructor"
 };
 
 
@@ -285,9 +281,6 @@ s_protocol_event (s_client_t *self, zmailer_msg_t *message)
 {
     assert (message);
     switch (zmailer_msg_id (message)) {
-        case ZMAILER_MSG_WORLD:
-            return world_event;
-            break;
         default:
             zsys_error ("%s: unknown command %s, halting",
                         self->log_prefix, zmailer_msg_command (message));
@@ -330,39 +323,6 @@ s_client_execute (s_client_t *self, event_t event)
                             zsys_debug ("%s:         $ connect to server", self->log_prefix);
                         connect_to_server (&self->client);
                     }
-                    if (!self->exception) {
-                        //  send HELLO
-                        if (zmailer_client_verbose)
-                            zsys_debug ("%s:         $ send HELLO",
-                                self->log_prefix);
-                        zmailer_msg_set_id (self->message, ZMAILER_MSG_HELLO);
-                        zsys_debug ("%s: Send message to server", self->log_prefix);
-                        zmailer_msg_print (self->message);
-                        zmailer_msg_send (self->message, self->dealer);
-                    }
-                    if (!self->exception)
-                        self->state = connected_state;
-                }
-                else {
-                    //  Handle unexpected internal events
-                    zsys_warning ("%s: unhandled event %s in %s",
-                        self->log_prefix,
-                        s_event_name [self->event],
-                        s_state_name [self->state]);
-                    assert (false);
-                }
-                break;
-
-            case connected_state:
-                if (self->event == world_event) {
-                    if (!self->exception) {
-                        //  terminate
-                        if (zmailer_client_verbose)
-                            zsys_debug ("%s:         $ terminate", self->log_prefix);
-                        self->fsm_stopped = true;
-                    }
-                    if (!self->exception)
-                        self->state = connected_state;
                 }
                 else {
                     //  Handle unexpected internal events
@@ -535,8 +495,7 @@ struct _zmailer_client_t {
 
 //  ---------------------------------------------------------------------------
 //  Create a new zmailer_client
-//  Connect to server endpoint, with specified timeout in msecs (zero means wait    
-//  forever). Constructor succeeds if connection is successful.                     
+//  Connect to server endpoint, constructor succeeds if connection is successful.   
 
 static uint32_t 
 zmailer_client_constructor (zmailer_client_t *self, const char *endpoint);
@@ -671,8 +630,7 @@ s_accept_reply (zmailer_client_t *self, ...)
 
 
 //  ---------------------------------------------------------------------------
-//  Connect to server endpoint, with specified timeout in msecs (zero means wait    
-//  forever). Constructor succeeds if connection is successful.                     
+//  Connect to server endpoint, constructor succeeds if connection is successful.   
 //  Returns >= 0 if successful, -1 if interrupted.
 
 static uint32_t 

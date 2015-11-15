@@ -20,10 +20,6 @@
 
 /*  These are the zmailer_msg messages:
 
-    HELLO - 
-
-    WORLD - 
-
     MAIL - Send a message by Mail (using predefined other parameters)
         version             number 2    Version
         from                string      From field
@@ -33,9 +29,7 @@
 */
 
 
-#define ZMAILER_MSG_HELLO                   1
-#define ZMAILER_MSG_WORLD                   2
-#define ZMAILER_MSG_MAIL                    3
+#define ZMAILER_MSG_MAIL                    1
 
 #include <czmq.h>
 

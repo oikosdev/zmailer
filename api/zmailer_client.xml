@@ -7,17 +7,9 @@
     package_dir = "../include"
     >
 
-
-
     <state name = "start">
-        <event name = "constructor" next = "connected">
+        <event name = "constructor">
             <action name = "connect to server" />
-            <action name = "send" message = "HELLO" />
-        </event>
-    </state>
-    <state name = "connected">
-        <event name = "WORLD" next = "connected" >
-            <action name = "terminate" />
         </event>
     </state>
 
@@ -31,8 +23,7 @@
     </reply>
 
     <method name = "constructor" return = "status">
-    Connect to server endpoint, with specified timeout in msecs (zero means
-    wait forever). Constructor succeeds if connection is successful.
+    Connect to server endpoint, constructor succeeds if connection is successful.
        <field name = "endpoint" type = "string" />
        <accept reply = "SUCCESS" />
        <accept reply = "FAILURE" />

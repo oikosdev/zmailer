@@ -1,19 +1,11 @@
 The following ABNF grammar defines the zmailer msg protocol:
 
-    zmailer_msg     = *( HELLO | WORLD | MAIL )
-
-    ;  No description                                                        
-
-    HELLO           = signature %d1
-    signature       = %xAA %xA0             ; two octets
-
-    ;  No description                                                        
-
-    WORLD           = signature %d2
+    zmailer_msg     = *( MAIL )
 
     ;  Send a message by Mail (using predefined other parameters)            
 
-    MAIL            = signature %d3 version from to subject request
+    MAIL            = signature %d1 version from to subject request
+    signature       = %xAA %xA0             ; two octets
     version         = number-2              ; Version
     from            = string                ; From field
     to              = longstr               ; To field

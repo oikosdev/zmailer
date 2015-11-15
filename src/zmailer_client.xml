@@ -8,14 +8,8 @@
     >
 
     <state name = "start">
-        <event name = "constructor" next = "connected">
+        <event name = "constructor">
             <action name = "connect to server" />
-            <action name = "send" message = "HELLO" />
-        </event>
-    </state>
-    <state name = "connected">
-        <event name = "WORLD" next = "connected" >
-            <action name = "terminate" />
         </event>
     </state>
 

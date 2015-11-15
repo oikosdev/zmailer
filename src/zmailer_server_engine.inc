@@ -24,8 +24,7 @@ typedef enum {
 typedef enum {
     NULL_event = 0,
     terminate_event = 1,
-    hello_event = 2,
-    mail_event = 3
+    mail_event = 2
 } event_t;
 
 //  Names for state machine logging and error reporting
@@ -39,7 +38,6 @@ static char *
 s_event_name [] = {
     "(NONE)",
     "terminate",
-    "HELLO",
     "MAIL"
 };
 
@@ -99,8 +97,6 @@ static void
     s_client_execute (s_client_t *client, event_t event);
 static int
     s_client_handle_wakeup (zloop_t *loop, int timer_id, void *argument);
-static void
-    echo (client_t *self);
 static void
     send_email (client_t *self);
 
@@ -287,9 +283,6 @@ s_protocol_event (zmailer_msg_t *message)
 {
     assert (message);
     switch (zmailer_msg_id (message)) {
-        case ZMAILER_MSG_HELLO:
-            return hello_event;
-            break;
         case ZMAILER_MSG_MAIL:
             return mail_event;
             break;
@@ -378,26 +371,6 @@ s_client_execute (s_client_t *self, event_t event)
         }
         switch (self->state) {
             case start_state:
-                if (self->event == hello_event) {
-                    if (!self->exception) {
-                        //  echo
-                        if (self->server->verbose)
-                            zsys_debug ("%s:         $ echo", self->log_prefix);
-                        echo (&self->client);
-                    }
-                    if (!self->exception) {
-                        //  send WORLD
-                        if (self->server->verbose)
-                            zsys_debug ("%s:         $ send WORLD",
-                                self->log_prefix);
-                        zmailer_msg_set_id (self->server->message, ZMAILER_MSG_WORLD);
-                        zsys_debug ("%s: Send message to client", self->log_prefix);
-                        zmailer_msg_print (self->server->message);
-                        zmailer_msg_set_routing_id (self->server->message, self->routing_id);
-                        zmailer_msg_send (self->server->message, self->server->router);
-                    }
-                }
-                else
                 if (self->event == mail_event) {
                     if (!self->exception) {
                         //  send email

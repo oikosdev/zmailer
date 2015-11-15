@@ -128,40 +128,21 @@ zmailer_server_test (bool verbose)
 
     //  TODO: fill this out
     zmailer_msg_t *request = zmailer_msg_new ();
-    zmailer_msg_set_id (request, ZMAILER_MSG_HELLO);
+    zmailer_msg_set_id (request, ZMAILER_MSG_MAIL);
+    // PLEASE CHANGE
+    zmailer_msg_set_from (request, "oikosdev <cb@oikosdev.net>");
+    // PLEASE CHANGE
+    zmailer_msg_set_to   (request, "oikosdev <cb@oikosdev.net>");
+    zmailer_msg_set_subject (request, "Test");
+    zmailer_msg_set_request (request, "This is a test email for you !");
     zmailer_msg_send (request, client);
     sleep (1);
     zmailer_msg_destroy (&request);
-    zmailer_msg_t *request2 = zmailer_msg_new ();
-    zmailer_msg_set_id (request2, ZMAILER_MSG_MAIL);
-    // PLEASE CHANGE
-    zmailer_msg_set_from (request2, "oikosdev <cb@oikosdev.net>");
-    // PLEASE CHANGE
-    zmailer_msg_set_to   (request2, "oikosdev <cb@oikosdev.net>");
-    zmailer_msg_set_subject (request2, "Test");
-    zmailer_msg_set_request (request2, "This is a test email for you !");
-    zmailer_msg_send (request2, client);
-    sleep (1);
-    zmailer_msg_destroy (&request2);
     zsock_destroy (&client);
     zactor_destroy (&server);
     //  @end
     printf ("OK\n");
 }
-
-
-//  ---------------------------------------------------------------------------
-//  echo
-//
-
-static void
-echo (client_t *self)
-{
- zsys_info ("echo !!");
- const char *password = zconfig_get (self->server->config, "/zmailer_server/password", "");
- zsys_info ("configured password: %s", password);
-}
-
 
 //  ---------------------------------------------------------------------------
 //  send_email
@@ -204,7 +185,7 @@ send_email (client_t *self)
  fclose (pFile);
 
  FILE * pMail;
- pMail = fopen ("./data/mail.txt","r");
+ pMail = fopen (filename,"r");
  assert (pMail); 
  
  curl = curl_easy_init();
