@@ -66,7 +66,6 @@
     <main name = "progname">Exported public tool</main>
     <main name = "progname" private = "1">Internal tool</main>
     -->
-    <main name= "zmailer_testcase" private="1">client and server test case</main> 
 
     <!-- 
         Models that we build using GSL. 

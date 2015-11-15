@@ -51,12 +51,6 @@ src_zmailer_selftest_CPPFLAGS = ${src_libzmailer_la_CPPFLAGS}
 src_zmailer_selftest_LDADD = ${program_libs}
 src_zmailer_selftest_SOURCES = src/zmailer_selftest.c
 
-if WITH_ZMAILER_TESTCASE
-noinst_PROGRAMS += src/zmailer_testcase
-src_zmailer_testcase_CPPFLAGS = ${AM_CPPFLAGS}
-src_zmailer_testcase_LDADD = ${program_libs}
-src_zmailer_testcase_SOURCES = src/zmailer_testcase.c
-endif
 
 # Install api files into /usr/local/share/zproject
 apidir = @datadir@/zproject/zmailer

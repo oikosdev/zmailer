@@ -258,16 +258,6 @@ AM_CONDITIONAL(ON_ANDROID, test "x$zmailer_on_android" = "xyes")
 AM_CONDITIONAL(INSTALL_MAN, test "x$zmailer_install_man" = "xyes")
 AM_CONDITIONAL(BUILD_DOC, test "x$zmailer_build_doc" = "xyes")
 
-# Check for zmailer_testcase intent
-AC_ARG_WITH([zmailer_testcase],
-    AS_HELP_STRING([--with-zmailer_testcase],
-        [Compile the zmailer_testcase program [default=yes].]),
-    [with_zmailer_testcase=$withval],
-    [with_zmailer_testcase=yes])
-
-AM_CONDITIONAL([WITH_ZMAILER_TESTCASE], [test x$with_zmailer_testcase != xno])
-AM_COND_IF([WITH_ZMAILER_TESTCASE], [AC_MSG_NOTICE([WITH_ZMAILER_TESTCASE defined])])
-
 # Checks for library functions.
 AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(perror gettimeofday memset getifaddrs)
