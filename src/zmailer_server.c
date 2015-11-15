@@ -134,8 +134,10 @@ zmailer_server_test (bool verbose)
     zmailer_msg_destroy (&request);
     zmailer_msg_t *request2 = zmailer_msg_new ();
     zmailer_msg_set_id (request2, ZMAILER_MSG_MAIL);
+    // PLEASE CHANGE
     zmailer_msg_set_from (request2, "oikosdev <cb@oikosdev.net>");
-    zmailer_msg_set_to   (request2, "<christophe.beauce@gmail.com>");
+    // PLEASE CHANGE
+    zmailer_msg_set_to   (request2, "oikosdev <cb@oikosdev.net>");
     zmailer_msg_set_subject (request2, "Test");
     zmailer_msg_set_request (request2, "This is a test email for you !");
     zmailer_msg_send (request2, client);
@@ -179,8 +181,15 @@ send_email (client_t *self)
  struct curl_slist *recipients = NULL;
 
  FILE *pFile = fopen ("./data/mail.txt","w");
- // todo
- fprintf (pFile,"Date: Mon, 29 Nov 2010 21:54:29 +1100\r\n");
+ // date --------
+ time_t timer;
+ char buffer[256];
+ struct tm* tm_info;
+ time (&timer);
+ tm_info = localtime (&timer);
+ strftime (buffer, 60, "%a, %d %b %Y %T %z\r\n", tm_info);
+ //---------------
+ fprintf (pFile, "Date: %s", buffer);
  zsys_info ("To: %s \r\n", zmailer_msg_to(self->message));
  fprintf (pFile,"To: %s\r\n", zmailer_msg_to(self->message));
  fprintf (pFile, "From: %s\r\n", zmailer_msg_from (self->message));
