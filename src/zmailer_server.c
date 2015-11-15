@@ -174,13 +174,18 @@ send_email (client_t *self)
  assert (self);
  assert (self->message);
  zsys_info ("sending email !");
- sleep (2);
 
  CURL *curl;
  CURLcode res = CURLE_OK;
  struct curl_slist *recipients = NULL;
 
- FILE *pFile = fopen ("./data/mail.txt","w");
+ zuuid_t *uuid = zuuid_new ();
+ const char *uuid_s = zuuid_str (uuid);
+ char filename[256];
+ sprintf (filename, "./data/mail-%s.txt", uuid_s);
+ zuuid_destroy (&uuid);
+
+ FILE *pFile = fopen (filename,"w");
  // date --------
  time_t timer;
  char buffer[256];
@@ -196,17 +201,12 @@ send_email (client_t *self)
  fprintf (pFile, "Subject: %s \r\n", zmailer_msg_subject (self->message));
  fprintf (pFile, "\r\n");
  fprintf (pFile, "%s Thank you. \r\n", zmailer_msg_request(self->message));
- // fprintf (pFile, "\r\n.\r\n");
  fclose (pFile);
- sleep (20);
-
-// zfile_t* zf2 = zfile_new ("data","mail.txt");
-// zfile_input (zf2);
 
  FILE * pMail;
  pMail = fopen ("./data/mail.txt","r");
-// = zfile_handle (zf2);
-
+ assert (pMail); 
+ 
  curl = curl_easy_init();
  if(curl) {
     /* Set username and password */ 
@@ -270,5 +270,7 @@ send_email (client_t *self)
     /* Always cleanup */ 
     curl_easy_cleanup(curl);
   }
-assert(pMail); 
+
+  fclose (pMail);
+
 }
