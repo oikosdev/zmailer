@@ -555,8 +555,8 @@ zmailer_msg_test (bool verbose)
     self = zmailer_msg_new ();
     zmailer_msg_set_id (self, ZMAILER_MSG_MAIL);
 
-    zmailer_msg_set_from (self, "cb@oikosdev.net");
-    zmailer_msg_set_to (self, "christophe.beauce@gmail.com");
+    zmailer_msg_set_from (self, "Life is short but Now lasts for ever");
+    zmailer_msg_set_to (self, "Life is short but Now lasts for ever");
     zmailer_msg_set_subject (self, " test subject ");
     zmailer_msg_set_request (self, " this is the text to be sent ");
     //  Send twice
@@ -566,8 +566,8 @@ zmailer_msg_test (bool verbose)
     for (instance = 0; instance < 2; instance++) {
         zmailer_msg_recv (self, input);
         assert (zmailer_msg_routing_id (self));
-        assert (streq (zmailer_msg_from (self), "cb@oikosdev.net"));
-        assert (streq (zmailer_msg_to (self), "christophe.beauce@gmail.com"));
+        assert (streq (zmailer_msg_from (self), "Life is short but Now lasts for ever"));
+        assert (streq (zmailer_msg_to (self), "Life is short but Now lasts for ever"));
         assert (streq (zmailer_msg_subject (self), " test subject "));
         assert (streq (zmailer_msg_request (self), " this is the text to be sent "));
     }
