@@ -13,11 +13,9 @@
     </field>
     <field name = "from" type = "string">
         From field
-        <test>cb@oikosdev.net</test>
     </field>
     <field name = "to" type = "longstr">
         To field
-        <test>christophe.beauce@gmail.com</test>
     </field>
     <field name = "subject" type = "longstr">
         Subject of the mail
