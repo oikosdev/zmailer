@@ -130,9 +130,9 @@ zmailer_server_test (bool verbose)
     zmailer_msg_t *request = zmailer_msg_new ();
     zmailer_msg_set_id (request, ZMAILER_MSG_MAIL);
     // PLEASE CHANGE
-    zmailer_msg_set_from (request, "oikosdev <cb@oikosdev.net>");
+    zmailer_msg_set_from (request, "YOUROWNEMAIL");
     // PLEASE CHANGE
-    zmailer_msg_set_to   (request, "oikosdev <cb@oikosdev.net>");
+    zmailer_msg_set_to   (request, "YOUROWNEMAIL");
     zmailer_msg_set_subject (request, "Test");
     zmailer_msg_set_request (request, "This is a test email for you !");
     zmailer_msg_send (request, client);
