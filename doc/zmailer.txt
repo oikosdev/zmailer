@@ -1,0 +1,25 @@
+Name(7)
+=======
+
+
+NAME
+----
+zmailer - ZeroMQ mail agent
+
+
+SYNOPSIS
+--------
+----
+#include <zmailer.h>
+
+cc ['flags'] 'files' -lzmailer ['libraries']
+----
+
+
+DESCRIPTION
+-----------
+
+Classes
+~~~~~~~
+
+Something.
