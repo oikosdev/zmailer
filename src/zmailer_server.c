@@ -166,7 +166,12 @@ send_email (client_t *self)
  sprintf (filename, "./data/mail-%s.txt", uuid_s);
  zuuid_destroy (&uuid);
 
- FILE *pFile = fopen (filename,"w");
+ char fn[200];
+ sprintf (fn, "mail-%s.txt", uuid_s); 
+ zfile_t *zf = zfile_new ("./data", fn);
+ zfile_output (zf);
+ FILE *pFile = zfile_handle (zf);
+ //FILE *pFile = fopen (filename,"w");
  // date --------
  time_t timer;
  char buffer[256];
